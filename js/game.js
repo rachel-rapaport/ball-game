@@ -5,6 +5,7 @@ let image;
 let matBool=[];
 let cntBall=1;
 let idSetInterval;
+let gameOver = false;
 
 function creatMatBool() {
     for(let i = 0; i < 10; i++){
@@ -19,8 +20,13 @@ function createBoard() {
         const row = document.createElement('tr')
         for (let j = 0; j < 12; j++) {
             const cell = document.createElement('td');
-            if (j == 0 || j == 11 || i == 0 || i == 9)
-                cell.style.backgroundColor = 'purple'
+            if ((i == 0 || i == 9) && j == 5) {
+                cell.style.backgroundColor = 'lightgray';
+            } else if ((j == 0 || j == 11) && i == 4) {
+                cell.style.backgroundColor = 'lightgray'; 
+            } else if (j == 0 || j == 11 || i == 0 || i == 9) {
+                cell.style.backgroundColor = 'purple';
+            }
             row.appendChild(cell)
         }
         board.appendChild(row)
@@ -62,6 +68,7 @@ function addBall(){
 
 function muneMove(){
     document.addEventListener('keydown', (e) => {
+        if (gameOver) return;
         switch (e.key) {
             case 'ArrowUp':
                 moveImage(-1, 0); 
@@ -80,31 +87,53 @@ function muneMove(){
 }
 
 function moveImage(dx, dy) {
-   const newRow=currentRow+dx;
-   const newCol=currentCol+dy;
-   if (newRow > 0 && newRow < 9 && newCol > 0 && newCol < 11) {
+    let newRow = currentRow + dx;
+    let newCol = currentCol + dy;
+
+    if (newRow < 0 && newCol == 5) {
+        newRow = 9;
+    } else if (newRow > 9 && newCol == 5) {
+        newRow = 0; 
+    }
+
+    if (newCol < 0 && newRow == 4) {
+        newCol = 11; 
+    } else if (newCol > 11 && newRow == 4) {
+        newCol = 0; 
+    }
+
+    if (
+        (newRow > 0 && newRow < 9 && newCol > 0 && newCol < 11) ||  
+        ((newRow == 0 || newRow == 9) && newCol == 5) ||  
+        ((newCol == 0 || newCol == 11) && newRow == 4)    
+    ) {
         const currentCell = board.getElementsByTagName('tr')[currentRow].getElementsByTagName('td')[currentCol];
         currentCell.innerHTML = "";
+
         if (matBool[newRow][newCol]) {
             const newCellWithBall = board.getElementsByTagName('tr')[newRow].getElementsByTagName('td')[newCol];
             newCellWithBall.innerHTML = "";
             matBool[newRow][newCol] = false;
             cntBall--;
         }
-        currentRow=newRow;
-        currentCol=newCol;
-        const newCell=board.getElementsByTagName('tr')[currentRow].getElementsByTagName('td')[currentCol];
+
+        currentRow = newRow;
+        currentCol = newCol;
+        const newCell = board.getElementsByTagName('tr')[currentRow].getElementsByTagName('td')[currentCol];
         newCell.appendChild(image);
-        if(cntBall==0){
+
+        if (cntBall == 0) {
             setTimeout(() => {
-            creatModel();
-            clearInterval(idSetInterval)
+                creatModel();
+                clearInterval(idSetInterval);
             }, 100);
         }
-   }
+    }
 }
 
 function creatModel(){
+    gameOver = true;
+
     const home=document.getElementsByTagName('body')[0];
     const modal= document.createElement('div');
     modal.className="modal"

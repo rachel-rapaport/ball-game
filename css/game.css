@@ -5,7 +5,19 @@ body {
 }
 
 .board {
-    border-collapse: collapse; /* מסיר רווחים בין התאים */
+    border-collapse: collapse;
+}
+
+#board tr:first-child td, 
+#board tr:last-child td {
+    border-top: none;
+    border-bottom: none;
+}
+
+#board td:first-child, 
+#board td:last-child {
+    border-left: none;
+    border-right: none;
 }
 
 td {
@@ -54,7 +66,7 @@ td {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    margin: 0 10px;
+    margin: 10px 10px;
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s;
